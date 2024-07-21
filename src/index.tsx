@@ -1,41 +1,21 @@
 import { Hono } from 'hono'
 import { renderToString } from 'react-dom/server'
+import { DocumentLayout } from '@/document/DocumentLayout'
+import type { AppContext } from '@/types/context.types'
+import clockRoutes from '@/api/routes/clock'
 
-type Env = {
-  Bindings: {
-    MY_VAR: string
-  }
-}
+export type ApiApp = typeof app
+export type ApiRoutes = typeof routes
 
-const app = new Hono<Env>()
+const app = new Hono<AppContext>()
+const documentLayout = renderToString(<DocumentLayout />)
 
-app.get('/api/clock', (c) => {
-  return c.json({
-    var: c.env.MY_VAR, // Cloudflare Bindings
-    time: new Date().toLocaleTimeString()
-  })
-})
+// chain additional routes onto this example so the exported `ApiRoutes` type is accurate
+const routes = app.route('/api/clock', clockRoutes)
 
+// global route for get requests to unmatched paths return the html document layout
 app.get('*', (c) => {
-  return c.html(
-    renderToString(
-      <html>
-        <head>
-          <meta charSet="utf-8" />
-          <meta content="width=device-width, initial-scale=1" name="viewport" />
-          <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css" />
-          {import.meta.env.PROD ? (
-            <script type="module" src="/static/client.js"></script>
-          ) : (
-            <script type="module" src="/src/client.tsx"></script>
-          )}
-        </head>
-        <body>
-          <div id="root"></div>
-        </body>
-      </html>
-    )
-  )
+  return c.html(documentLayout)
 })
 
 export default app

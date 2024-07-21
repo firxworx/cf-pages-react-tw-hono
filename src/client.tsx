@@ -1,47 +1,35 @@
-import { createRoot } from 'react-dom/client'
-import { useState } from 'react'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
 
-function App() {
-  return (
-    <>
-      <h1>Hello, Hono with React!</h1>
-      <h2>Example of useState()</h2>
-      <Counter />
-      <h2>Example of API fetch()</h2>
-      <ClockButton />
-    </>
-  )
+const rootElement = document.getElementById('root')
+
+if (!rootElement) {
+  throw new Error('React app mount point #root not found in the document.')
 }
 
-function Counter() {
-  const [count, setCount] = useState(0)
-  return <button onClick={() => setCount(count + 1)}>You clicked me {count} times</button>
-}
+let root: ReactDOM.Root | null = null
 
-const ClockButton = () => {
-  const [response, setResponse] = useState<string | null>(null)
-
-  const handleClick = async () => {
-    const response = await fetch('/api/clock')
-    const data = await response.json()
-    const headers = Array.from(response.headers.entries()).reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {})
-    const fullResponse = {
-      url: response.url,
-      status: response.status,
-      headers,
-      body: data
-    }
-    setResponse(JSON.stringify(fullResponse, null, 2))
+const render = (Component: React.ComponentType): void => {
+  if (!root) {
+    root = ReactDOM.createRoot(rootElement)
   }
 
-  return (
-    <div>
-      <button onClick={handleClick}>Get Server Time</button>
-      {response && <pre>{response}</pre>}
-    </div>
+  root.render(
+    <React.StrictMode>
+      <Component />
+    </React.StrictMode>,
   )
 }
 
-const domNode = document.getElementById('root')!
-const root = createRoot(domNode)
-root.render(<App />)
+render(App)
+
+if (import.meta.hot) {
+  import.meta.hot.accept('./App', (newApp) => {
+    console.info('Hot-reloading: App')
+
+    if (newApp) {
+      render(newApp.default)
+    }
+  })
+}

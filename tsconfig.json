@@ -1,19 +1,16 @@
 {
   "compilerOptions": {
+    "strict": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "strict": true,
-    "lib": [
-      "ESNext",
-      "DOM",
-      "DOM.Iterable"
-    ],
-    "types": [
-      "@cloudflare/workers-types",
-      "vite/client"
-    ],
     "jsx": "react-jsx",
-    "jsxImportSource": "react"
-  },
+    "jsxImportSource": "react",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["@cloudflare/workers-types", "vite/client"]
+  }
 }
