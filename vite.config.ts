@@ -13,7 +13,7 @@ import tailwindcssNesting from 'tailwindcss/nesting'
 import cssDiscardComments from 'postcss-discard-comments'
 import postCssOklabPolyfill from '@csstools/postcss-oklab-function'
 
-// consider using `wrangler` to get the platform proxy
+// note: consider using `wrangler` to get the platform proxy
 // import { getPlatformProxy } from 'wrangler'
 
 // cloudflare build environment uses node 18 so `import.meta.dirname` is not available
